@@ -72,14 +72,17 @@ plt.show()
 
 # Plot the classification line
 if X_origin.shape[1] == 2:
-	x_opt=np.array([-10.0,10.0])
-	y_opt=np.array([0.0,0.0])
-	y_opt[0]=(-theta_save[-1,0]-x_opt[0]*theta_save[-1,1])/theta_save[-1,2]
-	y_opt[1]=(-theta_save[-1,0]-x_opt[1]*theta_save[-1,1])/theta_save[-1,2]
-
+	# prepare the contour
+	xx, yy = np.meshgrid(np.linspace(-2.5, 5, 1000), np.linspace(-2.5, 7.5, 1000))
+	X_pred = np.c_[np.ones(len(xx.ravel())), xx.ravel(), yy.ravel()]
+	Z_ = 1.0/(1 + np.exp(-np.dot(X_pred,theta_save[-1,:])))
+	Z = np.array([1 if i > 0.5 else -1 for i in Z_])
+	Z = Z.reshape(xx.shape)
+	contours = plt.contour(xx, yy, Z, levels=[0], colors = ['green'] ,linewidths=2, linestyles='dashed' )
+    
+    # prepare the training points for scatter plot	
 	colors = np.where(Y == 0, 'r', 'b')
 	plt.scatter(X_origin[:,0], X_origin[:,1], c = colors ,marker='x')
-	plt.plot(x_opt,y_opt)
 	plt.show()
 else:
 	print('More than 2 dimensions are not show the graphics')
